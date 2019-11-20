@@ -1,0 +1,15 @@
+name: Pull Request Comment Trigger
+'on':
+  pull_request:
+    - types: [opened]
+  issue_comment:
+    - types: [created]
+
+jobs:
+  pull_request_comment_trigger:
+    runs-on: ubuntu-latest
+    steps:
+    - name: try it out
+      run: node pull-request-comment-trigger.js
+      env:
+        GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
