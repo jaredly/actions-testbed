@@ -11,6 +11,12 @@ jobs:
     steps:
       - uses: actions/checkout@v1
         name: get the repo
+      - name: get node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - name: npm i
+        run: npm i
       - name: try it out
         run: node pull-request-comment-trigger.js
         env:
