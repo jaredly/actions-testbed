@@ -9,7 +9,9 @@ jobs:
   pull_request_comment_trigger:
     runs-on: ubuntu-latest
     steps:
-    - name: try it out
-      run: node pull-request-comment-trigger.js
-      env:
-        GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+      - uses: actions/checkout@v1
+        name: get the repo
+      - name: try it out
+        run: node pull-request-comment-trigger.js
+        env:
+          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
