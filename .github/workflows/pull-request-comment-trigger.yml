@@ -21,3 +21,4 @@ jobs:
         run: node pull-request-comment-trigger.js
         env:
           GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+          INPUT_TRIGGER: '@build/android'
