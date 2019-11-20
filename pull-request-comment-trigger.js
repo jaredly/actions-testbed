@@ -1,7 +1,7 @@
 const core = require('@actions/core');
 const {context, GitHub} = require('@actions/github')
 
-
+// send a thumbs up to the comment
 const thumbsUp = ({owner, repo, id}) => {
     const client = new GitHub(process.env.GITHUB_TOKEN);
 
