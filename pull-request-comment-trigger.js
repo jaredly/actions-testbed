@@ -37,7 +37,7 @@ async function run() {
             repo,
             issue_number: context.payload.pull_request.number,
             content: 'rocket'
-        })
+        });
     }
 }
 
