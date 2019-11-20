@@ -32,7 +32,7 @@ async function run() {
             content: 'rocket'
         })
     } else {
-        await octokit.reactions.createForIssue({
+        await client.reactions.createForIssue({
             owner,
             repo,
             issue_number: context.payload.pull_request.number,
