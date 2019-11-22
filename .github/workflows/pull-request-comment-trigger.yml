@@ -11,7 +11,6 @@ jobs:
     steps:
       - uses: Khan/pull-request-comment-trigger@1.0.0
         id: check
-        # bail_if: outputs.triggered != 'true'
         with:
           trigger: '#build/android'
           reaction: rocket
@@ -30,11 +29,13 @@ jobs:
                 core.setFailed('Not a pull request issue comment')
                 process.exit(1)
               }
-              if (!pr.merge_commit_sha) {
-                core.setFailed('Pull request is not mergeable!')
-                process.exit(1)
-              }
-              ref = pr.merge_commit_sha
+              ref = `refs/pull/${pr.number}/merge`
+              console.log(JSON.stringify(pr))
+              # if (!pr.merge_commit_sha) {
+              #   core.setFailed('Pull request is not mergeable!')
+              #   process.exit(1)
+              # }
+              # ref = pr.merge_commit_sha
             }
             core.exportVariable(
               'PULL_REQUEST_REF',
@@ -46,20 +47,11 @@ jobs:
         with:
           ref: ${{ env.PULL_REQUEST_REF }}
       - run: echo 'Ok folks, it is great'
-      # - name: get node
-      #   uses: actions/setup-node@v1
-      #   with:
-      #     node-version: 12
-      # - name: npm i
-      #   run: npm i
-      # - name: try it out
-      #   run: ./pull-request-comment-trigger.js
-      #   env:
-      #     GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
-      #     INPUT_TRIGGER: '@build/android'
+      - run: git rev-parse HEAD
       - name: Report failure
         if: failure() && steps.check.outputs.triggered == 'true'
         uses: actions/github-script@0.3.0
         with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
             github.issues.createComment({...context.issue, body: 'oh no it failed'})
