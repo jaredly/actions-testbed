@@ -61,4 +61,5 @@ jobs:
         if: failure() && steps.check.outputs.triggered == 'true'
         uses: actions/github-script@0.3.0
         with:
-          github.issues.createComment({...context.issue, body: 'oh no it failed'})
+          script: |
+            github.issues.createComment({...context.issue, body: 'oh no it failed'})
