@@ -9,16 +9,56 @@ jobs:
   pull_request_comment_trigger:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-        name: get the repo
-      - name: get node
-        uses: actions/setup-node@v1
+      - uses: Khan/pull-request-comment-trigger@1.0.0
+        id: check
+        # bail_if: outputs.triggered != 'true'
         with:
-          node-version: 12
-      - name: npm i
-        run: npm i
-      - name: try it out
-        run: ./pull-request-comment-trigger.js
+          trigger: '#build/android'
+          reaction: rocket
         env:
-          GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
-          INPUT_TRIGGER: '@build/android'
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/github-script@0.3.0
+        if: steps.check.outputs.triggered == 'true'
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const core = require('@actions/core')
+            let ref = process.env.GITHUB_REF;
+            if (context.eventName === 'issue_comment') {
+              const pr = context.payload.issue.pull_request;
+              if (!pr) {
+                core.setFailed('Not a pull request issue comment')
+                process.exit(1)
+              }
+              if (!pr.merge_commit_sha) {
+                core.setFailed('Pull request is not mergeable!')
+                process.exit(1)
+              }
+              ref = pr.merge_commit_sha
+            }
+            core.exportVariable(
+              'PULL_REQUEST_REF',
+              ref
+            )
+      - uses: actions/checkout@v1
+        if: steps.check.outputs.triggered == 'true'
+        name: get the repo
+        with:
+          ref: ${{ env.PULL_REQUEST_REF }}
+      - run: echo 'Ok folks, it is great'
+      # - name: get node
+      #   uses: actions/setup-node@v1
+      #   with:
+      #     node-version: 12
+      # - name: npm i
+      #   run: npm i
+      # - name: try it out
+      #   run: ./pull-request-comment-trigger.js
+      #   env:
+      #     GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+      #     INPUT_TRIGGER: '@build/android'
+      - name: Report failure
+        if: failure() && steps.check.outputs.triggered == 'true'
+        uses: actions/github-script@0.3.0
+        with:
+          github.issues.createComment({...context.issue, body: 'oh no it failed'})
