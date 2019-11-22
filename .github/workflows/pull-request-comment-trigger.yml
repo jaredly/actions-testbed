@@ -30,17 +30,8 @@ jobs:
                 process.exit(1)
               }
               ref = 'refs/pull/' + context.payload.issue.number + '/merge'
-              console.log(JSON.stringify(pr))
-              // if (!pr.merge_commit_sha) {
-              //   core.setFailed('Pull request is not mergeable!')
-              //   process.exit(1)
-              // }
-              // ref = pr.merge_commit_sha
             }
-            core.exportVariable(
-              'PULL_REQUEST_REF',
-              ref
-            )
+            core.exportVariable('PULL_REQUEST_REF', ref)
       - uses: actions/checkout@v1
         if: steps.check.outputs.triggered == 'true'
         name: get the repo
@@ -55,3 +46,10 @@ jobs:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
             github.issues.createComment({...context.issue, body: 'oh no it failed'})
+      - name: Report success
+        if: steps.check.outputs.triggered == 'true'
+        uses: actions/github-script@0.3.0
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            github.issues.createComment({...context.issue, body: 'Yay it worked'})
