@@ -29,13 +29,13 @@ jobs:
                 core.setFailed('Not a pull request issue comment')
                 process.exit(1)
               }
-              ref = `refs/pull/${pr.number}/merge`
+              ref = 'refs/pull/' + pr.number + '/merge'
               console.log(JSON.stringify(pr))
-              # if (!pr.merge_commit_sha) {
-              #   core.setFailed('Pull request is not mergeable!')
-              #   process.exit(1)
-              # }
-              # ref = pr.merge_commit_sha
+              // if (!pr.merge_commit_sha) {
+              //   core.setFailed('Pull request is not mergeable!')
+              //   process.exit(1)
+              // }
+              // ref = pr.merge_commit_sha
             }
             core.exportVariable(
               'PULL_REQUEST_REF',
